@@ -8,9 +8,10 @@
 // Execute `rustlings hint lifetimes1` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+// I AM NOT DON
 
-fn longest(x: &str, y: &str) -> &str {
+//编译器无法知道该函数的返回值到底引用 x 还是 y ，因为编译器需要知道这些，来确保函数调用后的引用生命周期分析
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() {
         x
     } else {
