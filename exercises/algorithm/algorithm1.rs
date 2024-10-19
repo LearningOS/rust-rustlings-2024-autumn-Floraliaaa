@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+// I AM NOT DON
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -70,14 +70,89 @@ impl<T> LinkedList<T> {
         }
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+    where
+        T: PartialOrd
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+		// //TODO
+        // let mut mlist = LinkedList::<T>::new();
+        // let mut pa = list_a.start;
+        // let mut pb = list_b.start;
+		// let mut pnext = None;
+
+        // let ea = list_a.end;
+        // let eb = list_b.end;
+
+        // while(pa=ea||pb!=eb)
+        // {
+        //     if(list_a[pa]>list_b[pb]){
+        //         mlist.push(list_b[pb]);
+        //         pb+=1;
+
+        //     }
+        //     else{
+        //         mlist.push(list_a[pa]);
+        //         pa+=1;
+        //     }
+        // }
+        // while(pa!=ea)
+        // {
+        //     mlist.push(list_a[pa]);
+        //     pa+=1;
+        // }
+
+        // while(pb!=eb)
+        // {
+        //     mlist.push(list_b[pb]);
+        //     pb+=1;
+        // }
+
+        // mlist
+        let mut merged_list = LinkedList::<T>::new();
+        let mut list_a_node_opt = list_a.start;
+        let mut list_b_node_opt = list_b.start;
+        let mut next_node_opt = None;
+
+        // 当两个链表都不为空时，比较两个链表的头节点的值，将较小的节点加入到新链表中
+        loop {
+            match (list_a_node_opt, list_b_node_opt) {
+                (Some(list_a_node), Some(list_b_node)) => {
+                    let list_a_node_ref = unsafe { list_a_node.as_ref() };
+                    let list_b_node_ref = unsafe { list_b_node.as_ref() };
+                    if list_a_node_ref.val < list_b_node_ref.val {
+                        next_node_opt = Some(list_a_node);
+                        list_a_node_opt = list_a_node_ref.next;
+                    } else {
+                        next_node_opt = Some(list_b_node);
+                        list_b_node_opt = list_b_node_ref.next;
+                    }
+                }
+                (Some(list_a_node), None) => {
+                    next_node_opt = Some(list_a_node);
+                    list_a_node_opt = unsafe { list_a_node.as_ref().next };
+                }
+                (None, Some(list_b_node)) => {
+                    next_node_opt = Some(list_b_node);
+                    list_b_node_opt = unsafe { list_b_node.as_ref().next };
+                }
+                (None, None) => break,
+            }
+
+            // 当新链表为空时，将新链表的头节点指向第一个节点
+            if merged_list.start.is_none() {
+                merged_list.start = next_node_opt;
+            }
+
+            // 将新链表的尾节点指向新加入的节点
+            if let Some(end) = merged_list.end.as_mut() {
+                unsafe { end.as_mut().next = next_node_opt };
+            }
+
+            // 更新新链表的尾节点
+            merged_list.end = next_node_opt;
         }
-	}
+
+        merged_list
+    }
 }
 
 impl<T> Display for LinkedList<T>
