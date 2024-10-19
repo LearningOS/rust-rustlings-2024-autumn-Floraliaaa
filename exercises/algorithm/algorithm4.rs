@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+//I AM NOT DON
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -43,20 +43,18 @@ impl<T> BinarySearchTree<T>
 where
     T: Ord,
 {
-
     fn new() -> Self {
         BinarySearchTree { root: None }
     }
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        insert_node(&mut self.root, value);
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        search_node(&self.root, value)
     }
 }
 
@@ -66,7 +64,39 @@ where
 {
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
-        //TODO
+        match value.cmp(&self.value) {
+            Ordering::Less => insert_node(&mut self.left, value),
+            Ordering::Greater => insert_node(&mut self.right, value),
+            Ordering::Equal => return,
+        }
+    }
+}
+
+fn insert_node<T>(node: &mut Option<Box<TreeNode<T>>>, value: T)
+where
+    T: Ord,
+{
+    match node {
+        Some(node) => match value.cmp(&node.value) {
+            Ordering::Less => insert_node(&mut node.left, value),
+            Ordering::Greater => insert_node(&mut node.right, value),
+            Ordering::Equal => return,
+        },
+        None => *node = Some(Box::new(TreeNode::new(value))),
+    }
+}
+
+fn search_node<T>(node: &Option<Box<TreeNode<T>>>, value: T) -> bool
+where
+    T: Ord,
+{
+    match node {
+        Some(node) => match value.cmp(&node.value) {
+            Ordering::Less => search_node(&node.left, value),
+            Ordering::Greater => search_node(&node.right, value),
+            Ordering::Equal => true,
+        },
+        None => false
     }
 }
 

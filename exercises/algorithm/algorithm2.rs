@@ -2,7 +2,7 @@
 	double linked list reverse
 	This problem requires you to reverse a doubly linked list
 */
-// I AM NOT DONE
+// I AM NOT DON
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -74,8 +74,44 @@ impl<T> LinkedList<T> {
     }
 	pub fn reverse(&mut self){
 		// TODO
+        // 前一次循环中处理的节点
+        let mut last_node_opt = None;
+        // 当前循环中处理的节点
+        let mut current_node_opt = self.start;
+
+        *self = {
+            // 创建一个新的链表，用于存储reverse后的链表
+            let mut reversed_list = LinkedList::new();
+            // 将新链表的长度设置为原链表的长度
+            reversed_list.length = self.length;
+            reversed_list
+        };
+
+        unsafe {
+            // 遍历原链表，注意 self 已经被替换为新链表
+            while let Some(mut current_node) = current_node_opt {
+                // "当前节点"更改为"当前节点"的下一个节点，用于下一次循环
+                current_node_opt = current_node.as_ref().next;
+                // 如果上次循环中有处理过节点，就将上次循环中的"当前节点"的next指针指向上次循环中的节点
+                if let Some(last_node) = last_node_opt {
+                    // 修改"当前节点"的next指针，指向上一次循环中的"当前节点"
+                    current_node.as_mut().next = Some(last_node);
+                }
+                // 如何还没有设置新链表尾节点，就将当前节点设置为新链表的尾节点
+                if self.end.is_none() {
+                    self.end = Some(current_node);
+                    self.end.as_mut().unwrap().as_mut().next = None;
+                }
+
+                // 每次都将当前节点作为新链表的头节点
+                // 等到遍历完成后，这个头节点就是整个链表的头节点
+                self.start = Some(current_node);
+                last_node_opt = Some(current_node);
+            }
+        }
+    }
 	}
-}
+
 
 impl<T> Display for LinkedList<T>
 where

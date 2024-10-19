@@ -2,7 +2,7 @@
 	queue
 	This question requires you to use queues to implement the functionality of the stac
 */
-// I AM NOT DONE
+// I AM NOT DON
 
 #[derive(Debug)]
 pub struct Queue<T> {
@@ -52,30 +52,59 @@ impl<T> Default for Queue<T> {
     }
 }
 
+enum IdleQueue {
+    Queue1,
+    Queue2,
+}
+
 pub struct myStack<T>
 {
-	//TODO
-	q1:Queue<T>,
-	q2:Queue<T>
+	idle_queue: IdleQueue,
+    q1: Queue<T>,
+    q2: Queue<T>,
 }
 impl<T> myStack<T> {
     pub fn new() -> Self {
         Self {
 			//TODO
+            idle_queue: IdleQueue::Queue1,
 			q1:Queue::<T>::new(),
 			q2:Queue::<T>::new()
         }
     }
     pub fn push(&mut self, elem: T) {
         //TODO
+        match self.idle_queue {
+            IdleQueue::Queue1 => {
+                self.q1.enqueue(elem);
+                while let Ok(e) = self.q2.dequeue() {
+                    self.q1.enqueue(e);
+                }
+                self.idle_queue = IdleQueue::Queue2;
+            }
+            IdleQueue::Queue2 => {
+                self.q2.enqueue(elem);
+                while let Ok(e) = self.q1.dequeue() {
+                    self.q2.enqueue(e);
+                }
+                self.idle_queue = IdleQueue::Queue1;
+            }
+        }
     }
     pub fn pop(&mut self) -> Result<T, &str> {
         //TODO
-		Err("Stack is empty")
+        match self.idle_queue {
+            IdleQueue::Queue1 => self.q2.dequeue(),
+            IdleQueue::Queue2 => self.q1.dequeue(),
+        }
+        .map_err(|_| "Stack is empty")
+		
     }
     pub fn is_empty(&self) -> bool {
-		//TODO
-        true
+		match self.idle_queue {
+            IdleQueue::Queue1 => self.q2.is_empty(),
+            IdleQueue::Queue2 => self.q1.is_empty(),
+        }
     }
 }
 
